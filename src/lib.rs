@@ -66,7 +66,7 @@ impl Plugin for NamPlugin {
             self.engine.spawn_load_path(path);
         }
 
-        self.last_capture = self.params.capture.value();
+        self.last_capture = self.params.load.value();
 
         true
     }
@@ -77,11 +77,11 @@ impl Plugin for NamPlugin {
         _aux: &mut AuxiliaryBuffers,
         _context: &mut impl ProcessContext<Self>,
     ) -> ProcessStatus {
-        let capture = self.params.capture.value();
-        if capture && !self.last_capture {
+        let load = self.params.load.value();
+        if load && !self.last_capture {
             self.engine.spawn_pick_file();
         }
-        self.last_capture = capture;
+        self.last_capture = load;
 
         let input_gain = gain_linear(&self.params.input_gain);
         let output_gain = gain_linear(&self.params.output_gain);

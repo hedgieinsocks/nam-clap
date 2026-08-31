@@ -11,8 +11,8 @@ pub struct NamParams {
     pub input_gain: FloatParam,
     #[id = "output_gain"]
     pub output_gain: FloatParam,
-    #[id = "capture"]
-    pub capture: BoolParam,
+    #[id = "load"]
+    pub load: BoolParam,
     #[persist = "nam_file"]
     pub nam_file: Arc<Mutex<Option<PathBuf>>>,
 }
@@ -36,18 +36,22 @@ impl NamParams {
         Self {
             input_gain: gain_param("Input Gain"),
             output_gain: gain_param("Output Gain"),
-            capture: BoolParam::new("NAM File", false).with_value_to_string(Arc::new(move |_| {
-                match display_path.lock().unwrap().as_ref() {
-                    Some(path) => path
-                        .file_name()
-                        .and_then(|n| n.to_str())
-                        .unwrap_or("?")
-                        .to_string(),
-                    None => "None".to_string(),
-                }
+            load: BoolParam::new("NAM File", false).with_value_to_string(Arc::new(move |_| {
+                nam_file_display_name(display_path.lock().unwrap().as_ref())
             })),
             nam_file,
         }
+    }
+}
+
+pub fn nam_file_display_name(path: Option<&PathBuf>) -> String {
+    match path {
+        Some(path) => path
+            .file_name()
+            .and_then(|n| n.to_str())
+            .unwrap_or("?")
+            .to_string(),
+        None => "None".to_string(),
     }
 }
 
